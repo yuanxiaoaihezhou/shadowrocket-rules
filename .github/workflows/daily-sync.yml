@@ -1,0 +1,34 @@
+name: Daily Rule Sync
+
+on:
+  schedule:
+    - cron: '0 0 * * *'
+  workflow_dispatch:
+
+jobs:
+  sync-and-pr:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Download Latest Rules from Upstream
+        run: |
+          bash sync.sh
+
+      - name: Create Pull Request if rules changed
+        uses: peter-evans/create-pull-request@v6
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "chore: 同步上游规则更新"
+          title: "🔄 每日规则更新审查"
+          body: |
+            上游 yfamilys.com 的规则发生了变化。
+            请仔细审查 `Files changed` 标签页，确认没有恶意的域名注入（特别是银行、支付等敏感域名）。
+            确认安全后，点击 Merge pull request 即可生效至你的客户端。
+          branch: "update-rules"
+          base: "main"
+          delete-branch: true
