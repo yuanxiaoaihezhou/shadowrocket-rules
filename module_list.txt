@@ -1,0 +1,6 @@
+# 在此处添加需要本地化的 module 链接，每行一个
+# Add module URLs to localize below, one per line
+# Lines starting with # are comments and will be ignored
+#
+# Example:
+# https://yfamilys.com/module/adultraplus.module

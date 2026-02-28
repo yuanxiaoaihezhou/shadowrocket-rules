@@ -8,26 +8,38 @@ on:
 jobs:
   sync-and-pr:
     runs-on: ubuntu-latest
+    # contents:write lets the action push the update branch;
+    # pull-requests:write lets it open the PR.
+    # NOTE: Also enable "Allow GitHub Actions to create and approve pull
+    # requests" in Settings > Actions > General > Workflow permissions.
     permissions:
       contents: write
       pull-requests: write
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
+        with:
+          # Pass the token explicitly so that the git remote is authenticated
+          # for the branch push performed by create-pull-request.
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Download Latest Rules from Upstream
         run: |
           bash sync.sh
 
-      - name: Create Pull Request if rules changed
+      - name: Download and Localize Modules
+        run: |
+          bash sync_modules.sh
+
+      - name: Create Pull Request if rules or modules changed
         uses: peter-evans/create-pull-request@v6
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          commit-message: "chore: 同步上游规则更新"
-          title: "🔄 每日规则更新审查"
+          commit-message: "chore: 同步上游规则及模块更新"
+          title: "🔄 每日规则/模块更新审查"
           body: |
-            上游 yfamilys.com 的规则发生了变化。
-            请仔细审查 `Files changed` 标签页，确认没有恶意的域名注入（特别是银行、支付等敏感域名）。
+            上游 yfamilys.com 的规则或模块发生了变化。
+            请仔细审查 `Files changed` 标签页，确认没有恶意的域名注入（特别是银行、支付等敏感域名）以及可疑脚本。
             确认安全后，点击 Merge pull request 即可生效至你的客户端。
           branch: "update-rules"
           base: "main"
