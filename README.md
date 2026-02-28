@@ -53,5 +53,7 @@
 ## 模块订阅地址 (Modules)
 
 <!-- MODULES_TABLE_START -->
-_暂无模块文件_
+| 模块名称 | 订阅地址 |
+|----------|----------|
+| adultraplus.module | `https://raw.githubusercontent.com/yuanxiaoaihezhou/shadowrocket-rules/main/modules/adultraplus.module` |
 <!-- MODULES_TABLE_END -->
