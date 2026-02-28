@@ -36,11 +36,19 @@ URLS=(
   "https://yfamilys.com/rule/ASN-CN.list"
 )
 
+FAILED=()
 for url in "${URLS[@]}"; do
   filename=$(basename "$url")
   echo "Downloading $filename..."
-  curl -sSL --retry 3 --retry-delay 2 \
-    -H "User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36" \
-    -o "rules/$filename" "$url"
+  if ! python3 download_with_browser.py "$url" "rules/$filename"; then
+    echo "  WARNING: Failed to download $filename" >&2
+    FAILED+=("$filename")
+  fi
 done
+
+if [ ${#FAILED[@]} -gt 0 ]; then
+  echo "The following files failed to download:" >&2
+  printf '  %s\n' "${FAILED[@]}" >&2
+  exit 1
+fi
 echo "Sync complete."

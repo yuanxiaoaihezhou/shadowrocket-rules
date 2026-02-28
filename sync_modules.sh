@@ -29,18 +29,14 @@ while IFS= read -r url || [ -n "$url" ]; do
   echo "Processing module: $module_filename from $url"
 
   tmp_file=$(mktemp)
-  curl --fail -sSL --retry 3 --retry-delay 2 \
-    -H "User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36" \
-    -o "$tmp_file" "$url"
+  python3 download_with_browser.py "$url" "$tmp_file"
 
   # Extract all script-path URLs from the [Script] section and download them
   while IFS= read -r script_url; do
     [[ -z "$script_url" ]] && continue
     script_filename=$(basename "$script_url")
     echo "  Downloading script: $script_filename"
-    curl --fail -sSL --retry 3 --retry-delay 2 \
-      -H "User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36" \
-      -o "${SCRIPTS_DIR}/${script_filename}" "$script_url"
+    python3 download_with_browser.py "$script_url" "${SCRIPTS_DIR}/${script_filename}"
     local_url="${RAW_BASE}/modules/scripts/${script_filename}"
     # Replace the remote URL with the local GitHub raw URL in the module file.
     # Use a temp file for the replacement to avoid sed -i portability issues.

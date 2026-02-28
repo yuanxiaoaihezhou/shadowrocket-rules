@@ -23,6 +23,12 @@ jobs:
           # for the branch push performed by create-pull-request.
           token: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Install Playwright and Chromium
+        run: |
+          pip install playwright
+          playwright install chromium
+          playwright install-deps chromium
+
       - name: Download Latest Rules from Upstream
         run: |
           bash sync.sh
