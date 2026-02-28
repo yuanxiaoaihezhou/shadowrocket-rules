@@ -34,7 +34,9 @@ while IFS= read -r url || [ -n "$url" ]; do
   # Extract all script-path URLs from the [Script] section and download them
   while IFS= read -r script_url; do
     [[ -z "$script_url" ]] && continue
-    script_filename=$(basename "$script_url")
+    # Strip query-string parameters from the filename to get a clean local name.
+    # e.g. "goofish.js?token=209863" -> "goofish.js"
+    script_filename=$(basename "$script_url" | sed 's/\?.*//')
     echo "  Downloading script: $script_filename"
     python3 download_with_browser.py "$script_url" "${SCRIPTS_DIR}/${script_filename}"
     local_url="${RAW_BASE}/modules/scripts/${script_filename}"

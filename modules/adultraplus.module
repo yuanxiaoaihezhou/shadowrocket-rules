@@ -2829,7 +2829,7 @@ myBlockAds3=type=http-response,pattern=^https:\/\/guide-acs\.m\.taobao\.com\/gw\
 
 cainiao4=type=http-response,pattern=^https:\/\/guide-acs\.m\.taobao\.com\/gw\/mtop\.cainiao\.guoguo\.nbnetflow\.ads\.mshow,requires-body=1,script-path=https://raw.githubusercontent.com/yuanxiaoaihezhou/shadowrocket-rules/main/modules/scripts/cainiao.js
 
-goofish=type=http-response,pattern=^https:\/\/g-acs\.m\.goofish\.com\/gw\/mtop\.taobao\.idlemtopsearch\.search\/,requires-body=1,script-path=https://raw.githubusercontent.com/yuanxiaoaihezhou/shadowrocket-rules/main/modules/scripts/goofish.js?token=209863
+goofish=type=http-response,pattern=^https:\/\/g-acs\.m\.goofish\.com\/gw\/mtop\.taobao\.idlemtopsearch\.search\/,requires-body=1,script-path=https://raw.githubusercontent.com/yuanxiaoaihezhou/shadowrocket-rules/main/modules/scripts/goofish.js
 
 meiyou_ads=type=http-response,pattern=^https:\/\/config-service\.seeyouyima\.com\/api\/configs\?,requires-body=1,script-path=https://raw.githubusercontent.com/yuanxiaoaihezhou/shadowrocket-rules/main/modules/scripts/meiyou_ads.js
 
@@ -2875,13 +2875,13 @@ adrive2=type=http-response,pattern=^https:\/\/api\.alipan\.com\/apps\/v2\/users\
 
 rrtv_json13=type=http-response,pattern=^https:\/\/api.juxingclub.com\/ad\/getAll,requires-body=1,script-path=https://raw.githubusercontent.com/yuanxiaoaihezhou/shadowrocket-rules/main/modules/scripts/rrtv_json.js
 
-goofish2=type=http-response,pattern=^https:\/\/acs\.m\.goofish\.com\/gw\/mtop\.taobao\.idlehome\.home\.circle\.list\/1\.0,requires-body=1,script-path=https://raw.githubusercontent.com/yuanxiaoaihezhou/shadowrocket-rules/main/modules/scripts/goofish.js?token=209863
+goofish2=type=http-response,pattern=^https:\/\/acs\.m\.goofish\.com\/gw\/mtop\.taobao\.idlehome\.home\.circle\.list\/1\.0,requires-body=1,script-path=https://raw.githubusercontent.com/yuanxiaoaihezhou/shadowrocket-rules/main/modules/scripts/goofish.js
 
-goofish3=type=http-response,pattern=^https:\/\/acs\.m\.goofish\.com\/gw\/mtop\.taobao\.idle\.local\.nearby\.itemdetail\.enter\/1\.0,requires-body=1,script-path=https://raw.githubusercontent.com/yuanxiaoaihezhou/shadowrocket-rules/main/modules/scripts/goofish.js?token=209863
+goofish3=type=http-response,pattern=^https:\/\/acs\.m\.goofish\.com\/gw\/mtop\.taobao\.idle\.local\.nearby\.itemdetail\.enter\/1\.0,requires-body=1,script-path=https://raw.githubusercontent.com/yuanxiaoaihezhou/shadowrocket-rules/main/modules/scripts/goofish.js
 
-goofish4=type=http-response,pattern=^https:\/\/acs\.m\.goofish\.com\/gw\/mtop\.taobao\.idle\.local\.flow\.plat\.section,requires-body=1,script-path=https://raw.githubusercontent.com/yuanxiaoaihezhou/shadowrocket-rules/main/modules/scripts/goofish.js?token=209863
+goofish4=type=http-response,pattern=^https:\/\/acs\.m\.goofish\.com\/gw\/mtop\.taobao\.idle\.local\.flow\.plat\.section,requires-body=1,script-path=https://raw.githubusercontent.com/yuanxiaoaihezhou/shadowrocket-rules/main/modules/scripts/goofish.js
 
-goofish5=type=http-response,pattern=^https:\/\/acs\.m\.goofish\.com\/gw\/mtop\.idle\.user\.page\.my\.adapter\/,requires-body=1,script-path=https://raw.githubusercontent.com/yuanxiaoaihezhou/shadowrocket-rules/main/modules/scripts/goofish.js?token=209863
+goofish5=type=http-response,pattern=^https:\/\/acs\.m\.goofish\.com\/gw\/mtop\.idle\.user\.page\.my\.adapter\/,requires-body=1,script-path=https://raw.githubusercontent.com/yuanxiaoaihezhou/shadowrocket-rules/main/modules/scripts/goofish.js
 
 spotify-qx-header=type=http-response,pattern=^https:\/\/(spclient\.wg\.spotify\.com|.*-spclient\.spotify\.com(:443)?)\/user-customization-service\/v1\/customize$ url script-request-header https://raw.githubusercontent.com/app2smile/rules/master/js/spotify-qx-header.js
 
@@ -2891,9 +2891,9 @@ maimai_ads=type=http-response,pattern=^https:\/\/(h3\.)?open\.taou\.com\/maimai\
 
 maimai_ads2=type=http-response,pattern=^https:\/\/(h3\.)?open\.taou\.com\/maimai\/(feed|gossip)\/v\d\/(focus_feed|gossip_detail_comment|feed_detail_comment?)\?,requires-body=1,script-path=https://raw.githubusercontent.com/yuanxiaoaihezhou/shadowrocket-rules/main/modules/scripts/maimai_ads.js
 
-goofish6=type=http-response,pattern=^https:\/\/(g-)?acs\.m\.goofish\.com\/gw\/mtop\.taobao\.idlehome\.home\.nextfresh\/,requires-body=1,script-path=https://raw.githubusercontent.com/yuanxiaoaihezhou/shadowrocket-rules/main/modules/scripts/goofish.js?token=209863
+goofish6=type=http-response,pattern=^https:\/\/(g-)?acs\.m\.goofish\.com\/gw\/mtop\.taobao\.idlehome\.home\.nextfresh\/,requires-body=1,script-path=https://raw.githubusercontent.com/yuanxiaoaihezhou/shadowrocket-rules/main/modules/scripts/goofish.js
 
-goofish7=type=http-response,pattern=^https:\/\/(g-)?acs\.m\.goofish\.com\/gw\/mtop\.taobao\.idle\.local\.home\/,requires-body=1,script-path=https://raw.githubusercontent.com/yuanxiaoaihezhou/shadowrocket-rules/main/modules/scripts/goofish.js?token=209863
+goofish7=type=http-response,pattern=^https:\/\/(g-)?acs\.m\.goofish\.com\/gw\/mtop\.taobao\.idle\.local\.home\/,requires-body=1,script-path=https://raw.githubusercontent.com/yuanxiaoaihezhou/shadowrocket-rules/main/modules/scripts/goofish.js
 
 zheye.min15=type=http-response,pattern=^https:\/\/(api|web-render)\.zhihu\.com\/topstory\/recommend,requires-body=1,script-path=https://raw.githubusercontent.com/yuanxiaoaihezhou/shadowrocket-rules/main/modules/scripts/zheye.min.js
 
