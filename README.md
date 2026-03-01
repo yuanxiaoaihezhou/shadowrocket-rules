@@ -55,5 +55,6 @@
 <!-- MODULES_TABLE_START -->
 | 模块名称 | 订阅地址 |
 |----------|----------|
+| AdBlock.module | `https://raw.githubusercontent.com/yuanxiaoaihezhou/shadowrocket-rules/main/modules/AdBlock.module` |
 | adultraplus.module | `https://raw.githubusercontent.com/yuanxiaoaihezhou/shadowrocket-rules/main/modules/adultraplus.module` |
 <!-- MODULES_TABLE_END -->
