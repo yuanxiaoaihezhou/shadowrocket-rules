@@ -123,13 +123,13 @@ script-path=https://raw.githubusercontent.com/yuanxiaoaihezhou/shadowrocket-rule
 
 > **修复说明**：发现文件 `goofish.js?token=209863`（文件名含 URL 查询参数），已将其重命名为 `goofish.js`，并更新模块引用及 `sync_modules.sh` 中的文件名提取逻辑，确保后续同步自动剥离 URL 查询参数。
 
-### 3.2 模块图标（外部依赖）
+### 3.2 模块图标（已本地化）
 
-模块头部包含：
+模块头部原本包含外部图标引用，现已本地化为本仓库路径：
 ```
-#!icon=https://raw.githubusercontent.com/deezertidal/private/main/icons/startingad.png
+#!icon=https://raw.githubusercontent.com/yuanxiaoaihezhou/shadowrocket-rules/main/modules/icons/startingad.png
 ```
-此图标来自外部第三方仓库（`deezertidal/private`）。图标仅影响 Shadowrocket 客户端显示，**不影响安全功能**，但属于外部视觉依赖，如该仓库删除或替换图片会导致模块图标失效或变更。
+图标文件已保存至 `modules/icons/startingad.png`。`sync_modules.sh` 在每次日常同步时会从上游重新下载模块，自动提取并替换 `#!icon=` 中的外部链接为本地链接，并同步检测图标内容是否变化，**防止每日更新恢复为外部链接**。
 
 ### 3.3 脚本内部功能性 HTTP 请求
 
@@ -154,7 +154,7 @@ script-path=https://raw.githubusercontent.com/yuanxiaoaihezhou/shadowrocket-rule
    - 新增 `eval()`、`Function()` 对动态字符串的调用
    - 修改现有正则匹配范围（特别是银行、支付相关域名）
 
-4. **模块图标**：如需完全消除外部依赖，可将图标文件下载至本仓库（如 `modules/icons/`）并在 `sync_modules.sh` 中同步处理 `#!icon=` 行。
+4. **模块图标**：图标已本地化至 `modules/icons/` 目录，`sync_modules.sh` 会在每次同步时自动下载最新图标并替换模块中的引用，无需额外操作。
 
 5. **每日更新流程**：当前 `sync_modules.sh` 已保证 `script-path` 链接在每次同步后仍指向本仓库（见 §3.1），无需额外操作。
 
