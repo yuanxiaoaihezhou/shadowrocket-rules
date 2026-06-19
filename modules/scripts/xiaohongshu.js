@@ -1,8 +1,7 @@
 /**
- * @author fmz200，Baby
+ * @author fmz200
  * @function 小红书去广告、净化、解除下载限制、画质增强等
- * @date 2026-01-18 23:10:00
- * @quote @RuCu6
+ * @date 2026-06-05 16:00:00
  */
 
 const $ = new Env('小红书');
@@ -147,7 +146,7 @@ if (url.includes("/note/live_photo/save")) {
   if (obj.data.datas) {
     replaceUrlContent(obj.data.datas, new_data);
   } else {
-    obj = {"code": 0, "success": true, "msg": "成功", "data": {"datas": new_data}};
+    obj = {"code": 0, "success": true, "msg": "fmz200创建响应体成功", "data": {"datas": new_data}};
   }
   console.log('新body：' + JSON.stringify(obj));
 } 
@@ -219,28 +218,7 @@ if (url.includes("/v4/note/videofeed")) {
       const h265List = item?.video_info_v2?.media?.stream?.h265 || [];
       const h264List = item?.video_info_v2?.media?.stream?.h264 || [];
 
-      let selectedStream = null;
-
-      // 排序函数：优先分辨率面积，其次平均码率
-      const sortStream = (a, b) => {
-        const resA = (a.width || 0) * (a.height || 0);
-        const resB = (b.width || 0) * (b.height || 0);
-        if (resB !== resA) return resB - resA; // 面积从大到小
-        return (b.avg_bitrate || 0) - (a.avg_bitrate || 0); // 码率从大到小
-      };
-
-      if (Array.isArray(h265List) && h265List.length > 0) {
-        // 过滤有效链接并排序
-        const sorted = h265List.filter(v => !!v.master_url).sort(sortStream);
-        if (sorted.length > 0) selectedStream = sorted[0];
-      }
-
-      // 降级策略：如果没有 H265，尝试 H264
-      if (!selectedStream && Array.isArray(h264List) && h264List.length > 0) {
-        const sorted = h264List.filter(v => !!v.master_url).sort(sortStream);
-        if (sorted.length > 0) selectedStream = sorted[0];
-      }
-
+      const selectedStream = selectBestStream(h265List, h264List);
       // 存入缓存数组
       if (item?.id && selectedStream?.master_url) {
         const data = {
@@ -329,66 +307,54 @@ if (url.includes("/v6/homefeed")) {
 if (url.includes("/api/sns/v5/note/comment/list?") || url.includes("/api/sns/v3/note/comment/sub_comments?")) {
   replaceRedIdWithFmz200(obj.data);
   let livePhotos = [];
+  let commentVideos = [];
   let note_id = "";
   if (obj.data?.comments?.length > 0) {
     note_id = obj.data.comments[0].note_id;
     for (const comment of obj.data.comments) {
-      // comment_type: 0-文字，2-图片/live，3-表情包
-      if (comment.comment_type === 3) {
-        comment.comment_type = 2;
-        console.log(`修改评论类型：3->2`);
-      }
-      if (comment.media_source_type === 1) {
-        comment.media_source_type = 0;
-        console.log(`修改媒体类型：1->0`);
-      }
-      if (comment.pictures?.length > 0) {
-        console.log("comment_id: " + comment.id);
-        for (const picture of comment.pictures) {
-          if (picture.video_id) {
-            const picObj = JSON.parse(picture.video_info);
-            if (picObj.stream?.h265?.[0]?.master_url) {
-              console.log("video_id：" + picture.video_id);
-              const videoData = {
-                videId: picture.video_id,
-                videoUrl: picObj.stream.h265[0].master_url
-              };
-              livePhotos.push(videoData);
-            }
-          }
-        }
-      }
+      // comment_type: 0-文字，2-图片/live，3-表情包，5-视频
+      fixCommentType(comment);
+      extractLivePhotos(comment.pictures, livePhotos, comment.id);
+
+      // 子评论处理
       if (comment.sub_comments?.length > 0) {
         for (const sub_comment of comment.sub_comments) {
-          if (sub_comment.comment_type === 3) {
-            sub_comment.comment_type = 2;
-            console.log(`修改评论类型1：3->2`);
-          }
-          if (sub_comment.media_source_type === 1) {
-            sub_comment.media_source_type = 0;
-            console.log(`修改媒体类型1：1->0`);
-          }
-          if (sub_comment.pictures?.length > 0) {
-            console.log("comment_id1: " + comment.id);
-            for (const picture of sub_comment.pictures) {
-              if (picture.video_id) {
-                const picObj = JSON.parse(picture.video_info);
-                if (picObj.stream?.h265?.[0]?.master_url) {
-                  console.log("video_id1：" + picture.video_id);
-                  const videoData = {
-                    videId: picture.video_id,
-                    videoUrl: picObj.stream.h265[0].master_url
-                  };
-                  livePhotos.push(videoData);
-                }
+          fixCommentType(sub_comment);
+          extractLivePhotos(sub_comment.pictures, livePhotos, comment.id, "_sub");
+        }
+      }
+
+      // 评论视频处理 
+      if (comment?.videos?.length > 0) {
+        for (const video of comment.videos) {
+          if (video?.video_id && video?.video_info) {
+            try {
+              const videoObj = JSON.parse(video.video_info);
+              // 选择最佳画质
+              const streams = selectBestStream(videoObj?.stream?.h265, videoObj?.stream?.h264);
+              if (streams?.master_url) {
+                commentVideos.push({
+                  videId: video.video_id,
+                  videoUrl: streams.master_url,
+                  commentId: comment.id,
+                  noteId: note_id,
+                  width: streams.width,
+                  height: streams.height,
+                  bitrate: streams.video_bitrate,
+                  hdr: streams.hdr_type === 1
+                });
               }
+            } catch (e) {
+              console.log("评论视频处理出错", e);
             }
           }
         }
       }
+      
     }
   }
   console.log("本次note_id：" + note_id);
+  // 存储评论实况照片
   if (livePhotos.length > 0) {
     let commitsRsp;
     const commitsCache = $.getdata("fmz200.xiaohongshu.comments.rsp");
@@ -409,11 +375,33 @@ if (url.includes("/api/sns/v5/note/comment/list?") || url.includes("/api/sns/v3/
     console.log("写入缓存val：" + JSON.stringify(commitsRsp));
     $.setdata(JSON.stringify(commitsRsp), "fmz200.xiaohongshu.comments.rsp");
   }
+
+  // 存储评论视频信息
+  if (commentVideos.length > 0) {
+    let videosCache;
+    const commitsCache = $.getdata("fmz200.xiaohongshu.comments.videos.rsp");
+    if (!commitsCache) {
+      videosCache = {noteId: note_id, videos: commentVideos};
+    } else {
+      videosCache = JSON.parse(commitsCache);
+      console.log("[commentVideos]缓存note_id：" + videosCache.noteId);
+      if (videosCache.noteId === note_id) {
+        console.log("[commentVideos]增量数据");
+        videosCache.videos = deduplicateLivePhotos(videosCache.videos.concat(commentVideos));
+      } else {
+        console.log("[commentVideos]更换数据");
+        videosCache = {noteId: note_id, videos: commentVideos};
+      }
+    }
+    console.log("[commentVideos]写入缓存val：" + JSON.stringify(videosCache));
+    $.setdata(JSON.stringify(videosCache), "fmz200.xiaohongshu.comments.videos.rsp");
+  }
 }
 
-// 下载评论区live图
+// 下载评论区live图/评论区视频
 if (url.includes("/api/sns/v1/interaction/comment/video/download?")) {
   const commitsCache = $.getdata("fmz200.xiaohongshu.comments.rsp");
+  const commitsVideoCache = $.getdata("fmz200.xiaohongshu.comments.videos.rsp");
   console.log("读取缓存val：" + commitsCache);
   console.log("目标video_id：" + obj.data.video.video_id);
   if (commitsCache) {
@@ -423,6 +411,18 @@ if (url.includes("/api/sns/v1/interaction/comment/video/download?")) {
         // console.log("缓存video_id：" + item.videId);
         if (item.videId === obj.data.video.video_id) {
           console.log("匹配到无水印链接：" + item.videoUrl);
+          obj.data.video.video_url = item.videoUrl;
+          break;
+        }
+      }
+    }
+  } else if (commitsVideoCache){
+    let commitsVideoRsp = JSON.parse(commitsVideoCache);
+    if (commitsVideoRsp.videos.length > 0 && obj.data?.video) {
+      for (const item of commitsVideoRsp.videos) {
+        // console.log("缓存video_id：" + item.videId);
+        if (item.videId === obj.data.video.video_id) {
+          console.log("[commentVideos]匹配到无水印链接：" + item.videoUrl);
           obj.data.video.video_url = item.videoUrl;
           break;
         }
@@ -467,10 +467,19 @@ function imageEnhance(jsonStr) {
 
 function replaceUrlContent(collectionA, collectionB) {
   console.log('替换无水印的URL');
+  // 匹配常见视频格式（扩展名到查询参数之前的部分）
+  const videoBaseRegex = /(.*\.(mp4|mov|webm|m3u8|ts|avi|mkv|flv))/i;
+
   collectionA.forEach(itemA => {
     const itemB = collectionB.find(itemB => itemB.file_id === itemA.file_id);
     if (itemB) {
-      itemA.url = itemA.url !== "" ? itemA.url.replace(/^https?:\/\/.*\.mp4(\?[^"]*)?/g, `${itemB.url.match(/(.*)\.mp4/)[1]}.mp4`) : itemB.url;
+      console.log(`file_id：${itemA.file_id}匹配到无水印链接`);
+      if (itemA.url !== "") {
+        const match = itemB.url.match(videoBaseRegex);
+        itemA.url = match ? match[1] : itemB.url;
+      } else {
+        itemA.url = itemB.url;
+      }
       itemA.author = "@fmz200"
     }
   });
@@ -499,6 +508,70 @@ function replaceRedIdWithFmz200(obj) {
     Object.keys(obj).forEach(key => {
       replaceRedIdWithFmz200(obj[key]);
     });
+  }
+}
+
+/**
+ * 从流列表中选择最佳流（优先 H265，降级 H264）
+ * @param {Array} h265List - H265 流列表
+ * @param {Array} h264List - H264 流列表
+ * @returns {Object|null} - 选中的流对象或 null
+ */
+function selectBestStream(h265List, h264List) {
+  // 排序函数：优先分辨率面积，其次平均码率
+  const sortStream = (a, b) => {
+    const resA = (a.width || 0) * (a.height || 0);
+    const resB = (b.width || 0) * (b.height || 0);
+    if (resB !== resA) return resB - resA;
+    return (b.avg_bitrate || 0) - (a.avg_bitrate || 0);
+  };
+
+  const selectFromList = (list) => {
+    if (!Array.isArray(list) || list.length === 0) return null;
+    const sorted = list.filter(v => !!v.master_url).sort(sortStream);
+    return sorted.length > 0 ? sorted[0] : null;
+  };
+
+  return selectFromList(h265List) || selectFromList(h264List);
+}
+
+/**
+ * 修复评论类型（3->2, 1->0）
+ * @param {Object} comment - 评论对象
+ */
+function fixCommentType(comment) {
+  if (comment.comment_type === 3) {
+    comment.comment_type = 2;
+    console.log(`修改评论类型：3->2`);
+  }
+  if (comment.media_source_type === 1) {
+    comment.media_source_type = 0;
+    console.log(`修改媒体类型：1->0`);
+  }
+}
+
+/**
+ * 从图片列表中提取live照片
+ * @param {Array} pictures - 图片列表
+ * @param {Array} livePhotos - live照片数组（会被修改）
+ * @param {string} commentId - 评论ID（用于日志）
+ * @param {string} prefix - 日志前缀
+ */
+function extractLivePhotos(pictures, livePhotos, commentId, prefix = "") {
+  if (!pictures?.length > 0) return;
+  console.log(`${prefix}comment_id: ` + commentId);
+  for (const picture of pictures) {
+    if (picture.video_id) {
+      const picObj = JSON.parse(picture.video_info);
+      const bestStream = selectBestStream(picObj.stream?.h265, picObj.stream?.h264);
+      if (bestStream?.master_url) {
+        console.log(`${prefix}video_id：` + picture.video_id);
+        livePhotos.push({
+          videId: picture.video_id,
+          videoUrl: bestStream.master_url
+        });
+      }
+    }
   }
 }
 
