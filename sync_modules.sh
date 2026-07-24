@@ -53,7 +53,7 @@ with open(path, encoding="utf-8") as f:
 with open(path, "w", encoding="utf-8") as f:
     f.write(content.replace(old, new))
 PYEOF
-  done < <(grep -oE '#!icon=https?://[^[:space:]]+' "$tmp_file" | sed 's/#!icon=//' | sort -u)
+  done < <(grep -oE '#!icon[[:space:]]*=[[:space:]]*https?://[^[:space:]]+' "$tmp_file" | sed -E 's/^#!icon[[:space:]]*=[[:space:]]*//' | sort -u)
 
   # Extract all script-path URLs from the [Script] section and download them
   while IFS= read -r script_url; do
