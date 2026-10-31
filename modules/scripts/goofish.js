@@ -1,4 +1,4 @@
-//  2026-05-28
+//  2026-10-24
 //  树先生
 //  当前文件内容仅供个人学习和研究使用，若使用过程中发生任何问题概不负责
 
@@ -55,30 +55,6 @@ if (url.includes("/mtop.idle.user.page.my.adapter")) {
 
   //  底部猜你喜欢
   obj.data.ability = [];
-  
-  //  处理横移菜单item.tool.exContent.tools[].exContent.title: 超级擦亮,拍照看价格,借钱,闲鱼小法庭,闲鱼公约,闲鱼圈子,循环商店,闲鱼体验官,安全中心,皮肤中心,帖子中心,代练入驻
-  
-  obj.data.container.sections.forEach(section => {
-    if (section.index === "3") {
-      // 定义要过滤的 toolId 列表
-      const targetToolTitle = ["超级擦亮", "闲鱼小法庭", "闲鱼公约", "安全中心", "帖子中心"];
-      // 筛选并保留一层数组结构
-      if (section.item?.tool?.exContent) {
-        const tools = section.item.tool.exContent.tools;
-      
-        const foundElements = section.item.tool.exContent.tools
-          .flat() // 将所有子数组扁平化成一个数组
-          .filter(element => 
-            element.exContent && 
-            element.exContent.title && 
-            targetToolTitle.includes(element.exContent.title)
-          );
-      
-        // 将筛选后的工具列表更新到 section 中
-        section.item.tool.exContent.tools = [foundElements];
-      }
-    }
-  });
 
 
   //  处理闲鱼会员信息
@@ -110,8 +86,30 @@ if (url.includes("/mtop.taobao.idlehome.home.circle.list")) {
   // 首页顶部列表
   if (obj.data?.next?.headList) {
     obj.data.next.headList = obj.data.next.headList.filter(circle => circle.bizCode === "main" || circle.bizCode === "recycle");
+    // 顶部回收按钮的动态图
+    const target = obj.data.next.headList.find(item => item.bizCode === "recycle");
+    if (target) {
+      // 确保 showInfo 存在
+      if (!target.showInfo) {
+        target.showInfo = {};
+      }
+      target.showInfo.rightTagImage = {};
+    }
   }
-  obj.data.headList = obj.data.headList.filter(circle => circle.bizCode === "main" || circle.bizCode === "recycle");
+  if (obj.data?.headList?.length > 0) {
+    obj.data.headList = obj.data.headList.filter(circle => circle.bizCode === "main" || circle.bizCode === "recycle");
+  
+    // 顶部回收按钮的动态图
+    const target = obj.data.headList.find(item => item.bizCode === "recycle");
+    if (target) {
+      // 确保 showInfo 存在
+      if (!target.showInfo) {
+        target.showInfo = {};
+      }
+      target.showInfo.rightTagImage = {};
+    }
+  
+  }
 }
 
 //if (url.indexOf("/mtop.taobao.idlemtopsearch.search") != -1) {
