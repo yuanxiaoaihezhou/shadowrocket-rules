@@ -4,7 +4,7 @@
  * 广告处理
 
 [rewrite_local]
-^https:\/\/api\.bevol\.com\/(?:appmain\/app\/home\/page|usercenter\/account\/info|personal\/page|appmain\/app\/home\/launch|trialbox\/shop\/app\/homePage)$ url script-response-body https://raw.githubusercontent.com/Yu9191/Rewrite/refs/heads/main/mlxx.js
+^https:\/\/api\.bevol\.com\/(?:appmain\/app\/home\/page|usercenter\/account\/info|personal\/page|appmain\/app\/home\/launch|trialbox\/shop\/app\/homePage)$ url script-response-body https://github.com/fmz200/wool_scripts/raw/main/Scripts/mlxx/mlxx.js
 
 [mitm]
 hostname = api.bevol.com
